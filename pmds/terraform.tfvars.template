@@ -1,0 +1,7 @@
+# terraform.tfvars - COMPLETE customization
+customer_name = "abb"
+server_prefix = "ABC"
+location      = "location"
+subnet_cidr   = "10.x.x.x/24"
+create_oem    = false
+ssh_password  = "SomePassword"
