@@ -11,6 +11,12 @@ variable "server_prefix" {
   default     = ""
 }
 
+variable "vnet_cidr" {
+  type        = string
+  description = "Address space for the VNet"
+  default     = ""
+}
+
 variable "subnet_cidr" {
   type        = string
   description = "Subnet CIDR for customer subnet"

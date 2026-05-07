@@ -2,6 +2,7 @@
 customer_name = "abb"
 server_prefix = "ABC"
 location      = "location"
-subnet_cidr   = "10.x.x.x/24"
+vnet_cidr     = "10.x.0.0/16"
+subnet_cidr   = "10.x.x.0/24"
 create_oem    = false
 ssh_password  = "SomePassword"
