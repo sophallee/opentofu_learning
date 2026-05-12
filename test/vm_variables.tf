@@ -9,21 +9,21 @@ variable "vm_configs" {
   }))
   description = "Configuration for different VM types"
   default = {
-    pmds = {
+    dbsrv1 = {
       suffix            = "DB01"
       vm_size           = "Standard_B4ms"
       ip_address_offset = 4
       data_disk_size_gb = 30
       db_disk_size_gb   = 20
     }
-    webapps = {
+    websrv1 = {
       suffix            = "WS01"
       vm_size           = "Standard_B2ms"
       ip_address_offset = 10
       data_disk_size_gb = 30
       db_disk_size_gb   = 20
     }
-    oem = {
+    websrv2 = {
       suffix            = "WS02"
       vm_size           = "Standard_B2ms"
       ip_address_offset = 11
@@ -31,6 +31,12 @@ variable "vm_configs" {
       db_disk_size_gb   = null
     }
   }
+}
+
+variable "vm_sizes" {
+  type        = map(string)
+  description = "Override VM size per type. Keys: dbsrv1, websrv1, oem. Falls back to vm_configs defaults if not set."
+  default     = {}
 }
 
 variable "os_disk_type" {

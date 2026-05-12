@@ -7,7 +7,7 @@ data "azurerm_image" "custom" {
 
 # Create network interfaces
 resource "azurerm_network_interface" "vm_nics" {
-  for_each = { for k in ["pmds", "webapps", "oem"] : k => k if k != "oem" || var.create_oem }
+  for_each = { for k in ["dbsrv1", "websrv1", "websrv2"] : k => k if k != "websrv2" || var.create_oem }
 
   name                = local.nic_names[each.key]
   location            = var.location
@@ -26,12 +26,12 @@ resource "azurerm_network_interface" "vm_nics" {
 
 # Create virtual machines
 resource "azurerm_linux_virtual_machine" "vms" {
-  for_each = { for k in ["pmds", "webapps", "oem"] : k => k if k != "oem" || var.create_oem }
+  for_each = { for k in ["dbsrv1", "websrv1", "websrv2"] : k => k if k != "websrv2" || var.create_oem }
 
   name                = local.vm_names[each.key]
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.location
-  size                = var.vm_configs[each.key].vm_size
+  size                = local.effective_vm_sizes[each.key]
 
   network_interface_ids = [
     azurerm_network_interface.vm_nics[each.key].id
@@ -64,7 +64,7 @@ resource "azurerm_linux_virtual_machine" "vms" {
 
 # Create data disks
 resource "azurerm_managed_disk" "data_disks" {
-  for_each = { for k in ["pmds", "webapps", "oem"] : k => k if k != "oem" || var.create_oem }
+  for_each = { for k in ["dbsrv1", "websrv1", "websrv2"] : k => k if k != "websrv2" || var.create_oem }
 
   name                 = "datadisk-${local.vm_names[each.key]}"
   resource_group_name  = azurerm_resource_group.rg.name
@@ -78,7 +78,7 @@ resource "azurerm_managed_disk" "data_disks" {
 
 # Create database disks (only for PMDS and Webapps)
 resource "azurerm_managed_disk" "db_disks" {
-  for_each = { for k in ["pmds", "webapps"] : k => k if var.vm_configs[k].db_disk_size_gb != null }
+  for_each = { for k in ["dbsrv1", "websrv1"] : k => k if var.vm_configs[k].db_disk_size_gb != null }
 
   name                 = "dbdisk-${local.vm_names[each.key]}"
   resource_group_name  = azurerm_resource_group.rg.name
@@ -92,7 +92,7 @@ resource "azurerm_managed_disk" "db_disks" {
 
 # Attach data disks to VMs
 resource "azurerm_virtual_machine_data_disk_attachment" "data_disk_attachments" {
-  for_each = { for k in ["pmds", "webapps", "oem"] : k => k if k != "oem" || var.create_oem }
+  for_each = { for k in ["dbsrv1", "websrv1", "websrv2"] : k => k if k != "websrv2" || var.create_oem }
 
   virtual_machine_id = azurerm_linux_virtual_machine.vms[each.key].id
   managed_disk_id    = azurerm_managed_disk.data_disks[each.key].id
@@ -107,7 +107,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "data_disk_attachments" 
 
 # Attach database disks to VMs
 resource "azurerm_virtual_machine_data_disk_attachment" "db_disk_attachments" {
-  for_each = { for k in ["pmds", "webapps"] : k => k if var.vm_configs[k].db_disk_size_gb != null }
+  for_each = { for k in ["dbsrv1", "websrv1"] : k => k if var.vm_configs[k].db_disk_size_gb != null }
 
   virtual_machine_id = azurerm_linux_virtual_machine.vms[each.key].id
   managed_disk_id    = azurerm_managed_disk.db_disks[each.key].id

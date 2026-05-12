@@ -6,3 +6,9 @@ vnet_cidr     = "10.x.0.0/16"
 subnet_cidr   = "10.x.x.0/24"
 create_oem    = false
 ssh_password  = "SomePassword"
+
+vm_sizes = {
+  dbsrv1  = "Standard_D4s_v3"
+  websrv1 = "Standard_D2s_v3"
+  websrv2 = "Standard_D2s_v3"
+}

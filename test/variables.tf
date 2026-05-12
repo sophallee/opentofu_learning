@@ -53,13 +53,13 @@ variable "create_oem" {
 variable "image_rg" {
   type        = string
   description = "Resource group containing custom images"
-  default     = "DEVELOPMENT-RG"
+  default     = "development_rg"
 }
 
 variable "custom_image_name" {
   type        = string
   description = "Custom image name"
-  default     = "almalinux_8_gen2"
+  default     = "almalinux_9_gen2"
 }
 
 variable "ssh_username" {
