@@ -75,3 +75,12 @@ variable "ssh_password" {
   sensitive   = true
 }
 
+variable "ssh_source_cidrs" {
+  type        = list(string)
+  description = "CIDRs allowed to SSH (port 22) to VMs via public IP"
+  default = [
+    "11.0.12.0/24",
+    "12.12.0.4/32"
+  ]
+}
+

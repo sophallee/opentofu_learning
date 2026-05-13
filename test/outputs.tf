@@ -24,9 +24,16 @@ output "nic_names" {
   }
 }
 
+output "vm_public_ips" {
+  value = {
+    for k, v in azurerm_public_ip.vm_pips :
+    k => v.ip_address
+  }
+}
+
 output "ssh_connection_strings" {
   value = {
     for k, v in local.vm_names :
-    k => "ssh ${var.ssh_username}@${local.ip_addresses[k]}" if k != "websrv2" || var.create_oem
+    k => "ssh ${var.ssh_username}@${azurerm_public_ip.vm_pips[k].ip_address}" if k != "websrv2" || var.create_oem
   }
 }

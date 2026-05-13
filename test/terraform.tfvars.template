@@ -1,14 +1,36 @@
 # terraform.tfvars - COMPLETE customization
-customer_name = "abb"
-server_prefix = "ABC"
-location      = "location"
+customer_name = "Demo"
+server_prefix = "DEMOSRV"
+location      = "australiasoutheast"
 vnet_cidr     = "10.x.0.0/16"
 subnet_cidr   = "10.x.x.0/24"
 create_oem    = false
 ssh_password  = "SomePassword"
+
+image_rg          = "development_rg"
+custom_image_name = "almalinux_9_gen2"
 
 vm_sizes = {
   dbsrv1  = "Standard_D4s_v3"
   websrv1 = "Standard_D2s_v3"
   websrv2 = "Standard_D2s_v3"
 }
+
+# vm_configs: override image_name per VM to use a different image than custom_image_name
+# Omit image_name (or set to null) to fall back to custom_image_name
+# vm_configs = {
+#   dbsrv1 = {
+#     suffix            = "DB01"
+#     vm_size           = "Standard_B4ms"
+#     ip_address_offset = 4
+#     data_disk_size_gb = 30
+#     db_disk_size_gb   = 20
+#     image_name        = "almalinux_8_gen2"   # override for this VM only
+#   }
+# }
+
+ssh_source_cidrs = [
+  "203.220.33.220/32",
+  "118.127.63.128/28",
+  "43.242.70.32/27"
+]

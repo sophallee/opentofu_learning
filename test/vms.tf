@@ -1,8 +1,23 @@
 # Filename: vms.tf
-# Data source for custom image (ONE image for all VMs)
-data "azurerm_image" "custom" {
-  name                = var.custom_image_name
+# Per-VM image lookup — falls back to custom_image_name when image_name is null
+data "azurerm_image" "vm_images" {
+  for_each = { for k in ["dbsrv1", "websrv1", "websrv2"] : k => k if k != "websrv2" || var.create_oem }
+
+  name                = coalesce(var.vm_configs[each.key].image_name, var.custom_image_name)
   resource_group_name = var.image_rg
+}
+
+# Create public IPs
+resource "azurerm_public_ip" "vm_pips" {
+  for_each = { for k in ["dbsrv1", "websrv1", "websrv2"] : k => k if k != "websrv2" || var.create_oem }
+
+  name                = "PIP_${local.vm_names[each.key]}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+
+  tags = local.base_tags
 }
 
 # Create network interfaces
@@ -18,10 +33,12 @@ resource "azurerm_network_interface" "vm_nics" {
     subnet_id                     = azurerm_subnet.customer_subnet.id
     private_ip_address_allocation = "Static"
     private_ip_address            = local.ip_addresses[each.key]
-    public_ip_address_id          = null
+    public_ip_address_id          = azurerm_public_ip.vm_pips[each.key].id
   }
 
   tags = local.base_tags
+
+  depends_on = [azurerm_public_ip.vm_pips]
 }
 
 # Create virtual machines
@@ -52,13 +69,16 @@ resource "azurerm_linux_virtual_machine" "vms" {
     disk_size_gb = 128  # Set a default value or make it configurable
   }
 
-  source_image_id = data.azurerm_image.custom.id
+  source_image_id = data.azurerm_image.vm_images[each.key].id
+
+  # Empty block = Azure-managed storage, required for serial console access
+  boot_diagnostics {}
 
   tags = local.base_tags
 
   depends_on = [
     azurerm_network_interface.vm_nics,
-    data.azurerm_image.custom
+    data.azurerm_image.vm_images
   ]
 }
 

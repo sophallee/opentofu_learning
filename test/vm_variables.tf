@@ -6,8 +6,9 @@ variable "vm_configs" {
     ip_address_offset = number
     data_disk_size_gb = number
     db_disk_size_gb   = optional(number)
+    image_name        = optional(string)
   }))
-  description = "Configuration for different VM types"
+  description = "Configuration for different VM types. image_name defaults to custom_image_name when null."
   default = {
     dbsrv1 = {
       suffix            = "DB01"
@@ -15,6 +16,7 @@ variable "vm_configs" {
       ip_address_offset = 4
       data_disk_size_gb = 30
       db_disk_size_gb   = 20
+      image_name        = null
     }
     websrv1 = {
       suffix            = "WS01"
@@ -22,6 +24,7 @@ variable "vm_configs" {
       ip_address_offset = 10
       data_disk_size_gb = 30
       db_disk_size_gb   = 20
+      image_name        = null
     }
     websrv2 = {
       suffix            = "WS02"
@@ -29,6 +32,7 @@ variable "vm_configs" {
       ip_address_offset = 11
       data_disk_size_gb = 30
       db_disk_size_gb   = null
+      image_name        = null
     }
   }
 }
