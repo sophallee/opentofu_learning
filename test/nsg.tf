@@ -46,6 +46,25 @@ resource "azurerm_network_security_rule" "allow_ssh_public" {
   depends_on = [azurerm_network_security_group.nsg]
 }
 
+resource "azurerm_network_security_rule" "allow_service_public" {
+  name                        = "Allow_Service_Public"
+  priority                    = 120
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+
+  source_port_range           = "*"
+  destination_port_ranges     = var.service_ports
+
+  source_address_prefixes     = var.service_source_cidrs
+  destination_address_prefix  = "*"
+
+  resource_group_name         = azurerm_resource_group.rg.name
+  network_security_group_name = azurerm_network_security_group.nsg.name
+
+  depends_on = [azurerm_network_security_group.nsg]
+}
+
 resource "azurerm_network_security_rule" "deny_in" {
   name                        = "Deny_In"
   priority                    = 200

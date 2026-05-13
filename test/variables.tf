@@ -84,3 +84,18 @@ variable "ssh_source_cidrs" {
   ]
 }
 
+variable "service_source_cidrs" {
+  type        = list(string)
+  description = "CIDRs allowed to reach service ports on VMs via public IP"
+  default = [
+    "11.0.12.0/24",
+    "12.12.0.4/32"
+  ]
+}
+
+variable "service_ports" {
+  type        = list(string)
+  description = "TCP ports exposed to service_source_cidrs via public IP"
+  default     = ["80", "443"]
+}
+
